@@ -3,9 +3,14 @@ import {getMyInfo,
         getTodoSvcMemberDB,
         setTodoSvcMemberDB,
         getDateTime,
+        setMyInfo,
+        getAllMemberInfo,
+        getAllTodoInfo,
+        setTodoSvcTOdoDB,
+        setIsSigned,
 } from '../js/util.js';
 import { useNavigate } from "react-router-dom";
-import {getLoginedSessionID} from '../js/session.js'
+import {getLoginedSessionID, setLoginedSessionID} from '../js/session.js'
 
 const Modify = () => {
 
@@ -19,12 +24,13 @@ const Modify = () => {
 
          useEffect (() => {
              console.log('useEffect()');
+             const sessionId = getLoginedSessionID(); //gpt
 
              let myInfo = getMyInfo(getLoginedSessionID());
              if(myInfo === undefined){
                 alert('로그인 하세요!');
                 navigate('./signin');
-                return
+                return;
                 
              }
              setuId(myInfo.uId);
@@ -32,6 +38,8 @@ const Modify = () => {
              setuMail(myInfo.uMail);
              setuPhone(myInfo.uPhone);
          },[navigate]);
+
+         
 
         // handler
     
@@ -52,33 +60,52 @@ const Modify = () => {
     
         const modifyBtnClickHandler = () => {
             console.log('[modify]modifyBtnClickHandler()');
+
+            let myInfo = getMyInfo(getLoginedSessionID());  //현제 정보
+
+            myInfo.uPw = uPw;
+            myInfo.uMail = uMail;
+            myInfo.uPhone = uPhone;
+            myInfo.uModDate = getDateTime();
     
-            let TodoSvcMemberDB = getTodoSvcMemberDB();
-            if (TodoSvcMemberDB === null) {
-                let newMemObj = {
-                    [uId]: {
-                        'uId': uId,
-                        'uPw': uPw,
-                        'uMail': uMail,
-                        'uPhone': uPhone,
-                        'uRegDate': getDateTime(),
-                        'uModDate': getDateTime(),
-                    }
-                };
-                setTodoSvcMemberDB(newMemObj);
-    
-            } else {
-                let TodoSvcMembers = JSON.parse(TodoSvcMemberDB);
-                TodoSvcMembers[uId] = {
-                    'uId': uId,
-                    'uPw': uPw,
-                    'uMail': uMail,
-                    'uPhone': uPhone,
-                    'uRegDate': getDateTime(),
-                    'uModDate': getDateTime(),
-                };
-                setTodoSvcMemberDB(TodoSvcMembers);
-            }
+            setMyInfo(getLoginedSessionID() , myInfo);
+
+            alert('수정완료!');
+
+            navigate('/');
+     
+        }
+
+
+        const deleteBtnClickHandler = () => {
+            console.log('deleteBtnClickHandler()');
+
+           
+            if(window.confirm('really?')) {
+            //DELETE MEMBER
+            let allMemberInfo = getAllMemberInfo();
+            delete allMemberInfo[getLoginedSessionID()];
+            setTodoSvcMemberDB(allMemberInfo);
+
+            //DELETE TODO INFO
+            let allTodoInfo = getAllTodoInfo();
+            delete allTodoInfo[uId];
+            setTodoSvcTOdoDB(allTodoInfo);
+
+            alert('MEMO DELETE SUCCESS!');
+
+            setLoginedSessionID();
+
+            setIsSigned(false);
+
+            navigate('/')
+        } else {
+            alert('DELETE CANCEL')
+        }
+
+
+        }
+
     
     
     return(
@@ -94,11 +121,12 @@ const Modify = () => {
             <input type="text" className="txt-basic" value={uPhone} onChange={uPhoneChangeHandler} placeholder="INPUT USER PHONE" />
             <br />
             <input type="button" className="btn-basic" value="Modify" onClick={modifyBtnClickHandler} />
+            <input type="button" className="btn-basic" value="Modify" onClick={deleteBtnClickHandler} />
             <br />
         </div>
         </>
          )
-    }
+    
 }
 
 export default Modify;

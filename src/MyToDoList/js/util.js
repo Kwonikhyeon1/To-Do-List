@@ -14,9 +14,6 @@ export const setTodoSvcMemberDB = (mems) => {
 
     localStorage.setItem(MEMBER_DB_IN_LOCALSTORAGE,JSON.stringify(mems));
 
-
-    
-
 }
 
 
@@ -38,7 +35,11 @@ export const setMyInfo = (uId, myInfo) => {
     mems[uId] = myInfo;
 
     setTodoSvcMemberDB(mems);
+
+
 }
+
+
 //TODO
 export const getTodoSvcTOdoDB = () => {
     console.log('getTodoSvcTOdoDB()')
@@ -59,8 +60,8 @@ export const getMyTodos = (uId) => {
 
     return myTodos;
 }
-export const setMtTodos = (uId, myTodos) => {
-    console.log('setMtTodos()');
+export const setMyTodos = (uId, myTodos) => {
+    console.log('setMyTodos()');
 
     let todos = JSON.parse(getTodoSvcTOdoDB());
     todos[uId] = myTodos;
@@ -69,6 +70,25 @@ export const setMtTodos = (uId, myTodos) => {
 
 }
 
+export const getAllMemberInfo = () => {
+    console.log('getAllMemberInfo()');
+
+    return JSON.parse(getTodoSvcMemberDB);
+
+
+}
+
+export const getAllTodoInfo = () => {
+    console.log('getAllTodoInfo()');
+    
+     return JSON.parse(getTodoSvcTOdoDB);
+}
+export const getToBeModifiedTodo = () => {
+    console.log('getToBeModifiedTodo()');
+
+    let myTodos = getMyTodos(uId);
+    return myTodos[key];
+}
 
 
 
@@ -92,6 +112,36 @@ export const getDateTime = () => {
     return `${fullYear}/${month}/${date} ${hours}:${minutes}:${seconds}`;
 }
 
+
+export const replaceDateTime = (dateTime) => {
+    console.log('replaceDateTime()');
+
+    return dateTime.replaceAll('/','').replaceAll(' ','').replaceAll(':','');
+
+}
+
+export const convertMapToArray =(map) => {
+    console.log('convertMapToArray')
+
+    let keys = Object.keys(map);
+
+    let arr=[];
+    for(let i = 0; i < keys.length; i++) {
+        let data = map[keys[i]]
+        data['key'] = keys[i];
+        arr.push(data);
+
+    }
+    return arr;
+
+}
+
+export const createRandomNumber = (minx, max) => {
+    console.log('createRandomNumber()');
+
+    return Math.floor(Math.random() * max) + min
+;
+}
 
 
 //FUNCTION
